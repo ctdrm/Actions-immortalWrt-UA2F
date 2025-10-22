@@ -96,10 +96,17 @@ jobs:
         
     - name: Compile the firmware
       id: compile
+      env:
+        CI:""
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j$(nproc) \
+          CMAKE_OPTIONS+=" -DUA2F_ENABLE_COVERAGE=OFF -DUA2F_ENABLE_LIBBACKTRACE=OFF" \
+        || make -j1 \
+          CMAKE_OPTIONS+=" -DUA2F_ENABLE_COVERAGE=OFF -DUA2F_ENABLE_LIBBACKTRACE=OFF" \
+        || make -j1 V=s \
+          CMAKE_OPTIONS+=" -DUA2F_ENABLE_COVERAGE=OFF -DUA2F_ENABLE_LIBBACKTRACE=OFF"
         echo "::set-output name=status::success"
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
