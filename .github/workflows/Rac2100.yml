@@ -97,7 +97,7 @@ jobs:
     - name: Compile the firmware
       id: compile
       env:
-        CI:""
+        CI: ""
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
